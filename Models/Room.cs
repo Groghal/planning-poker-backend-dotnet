@@ -8,5 +8,6 @@ namespace PlanningPoker.Api.Models
         public bool ShowVotes { get; set; }
         public string Host { get; set; } = string.Empty;
         public List<string> VoteOptions { get; set; } = new() { "1", "2", "3", "5", "8", "13" };
+        public string AdminPassword { get; set; } = string.Empty;
     }
 } 

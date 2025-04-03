@@ -6,7 +6,7 @@ namespace PlanningPoker.Api.Services
     {
         private static readonly Dictionary<string, Room> _rooms = new();
 
-        public Room CreateRoom(string? customRoomId = null, List<string>? voteOptions = null)
+        public Room CreateRoom(string? customRoomId = null, List<string>? voteOptions = null, string adminPassword = "")
         {
             var roomId = customRoomId ?? $"room-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
             
@@ -15,14 +15,23 @@ namespace PlanningPoker.Api.Services
                 throw new InvalidOperationException("Room ID already exists");
             }
 
+            var defaultVoteOptions = new List<string> { "1", "2", "3", "5", "8", "13" };
+            
             var room = new Room
             {
                 RoomId = roomId,
-                VoteOptions = voteOptions ?? new List<string> { "1", "2", "3", "5", "8", "13" }
+                VoteOptions = voteOptions?.Count > 0 ? voteOptions : defaultVoteOptions,
+                AdminPassword = adminPassword
             };
 
             _rooms[roomId] = room;
             return room;
+        }
+
+        public bool VerifyAdminPassword(string roomId, string adminPassword)
+        {
+            var room = GetRoom(roomId);
+            return room.AdminPassword == adminPassword;
         }
 
         public (string UserId, Room Room) JoinRoom(string roomId, string username)
@@ -92,6 +101,11 @@ namespace PlanningPoker.Api.Services
 
             user.Vote = vote;
             room.Votes[username] = vote;
+            
+            if (room.Votes[username] != vote)
+            {
+                room.Votes[username] = vote;
+            }
         }
 
         public void DeleteRoom(string roomId)
