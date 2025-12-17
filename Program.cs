@@ -1,4 +1,5 @@
 using PlanningPoker.Api.Services;
+using PlanningPoker.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,15 +9,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<RoomService>();
+builder.Services.AddSignalR();
 
 // Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:5173") // Vite default port
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -33,5 +36,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<PokerHub>("/api/hubs/poker");
 
 app.Run();
