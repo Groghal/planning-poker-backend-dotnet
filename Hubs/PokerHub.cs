@@ -14,10 +14,10 @@ public class PokerHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId);
     }
 
-    public async Task SendSmile(string roomId, string toUsername, string fromUsername, string emoji = "😃")
+    public async Task SendSmile(string roomId, string toUsername, string emoji = "😃")
     {
         // Broadcast to everyone in the room so all clients render the same animation/emoji.
         var safeEmoji = string.IsNullOrWhiteSpace(emoji) ? "😃" : emoji;
-        await Clients.Group(roomId).SendAsync("ReceiveSmile", fromUsername, toUsername, safeEmoji);
+        await Clients.Group(roomId).SendAsync("ReceiveSmile", toUsername, safeEmoji);
     }
 }
